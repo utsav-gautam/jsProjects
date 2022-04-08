@@ -16,6 +16,9 @@ let tool = canvas.getContext('2d');
 tool.strokeStyle = 'black'
 tool.lineWidth = '3';
 
+let undoRedoTracker = [];
+let track = 0;
+
 canvas.addEventListener('mousedown', function (e) {
     mousedown = true;
     beginPath({
@@ -30,9 +33,43 @@ canvas.addEventListener('mousemove', function (e) {
             y: e.clientY
         })
 })
-canvas.addEventListener('mouseup', function () {
+canvas.addEventListener('mouseup', function (e) {
     mousedown = false;
+
+    let url = canvas.toDataURL();
+    undoRedoTracker.push(url);
+    track = undoRedoTracker.length-1;
 })
+
+undo.addEventListener('click', function () {
+    if (track > 0) track--;
+    let trackObj = {
+        trackValue: track,
+        undoRedoTracker
+    }
+    undoRedoCanvas(trackObj);
+
+})
+redo.addEventListener('click', function () {
+    if (track < undoRedoTracker.length-1) track++;
+    let trackObj = {
+        trackValue: track,
+        undoRedoTracker
+    }
+    undoRedoCanvas(trackObj);
+})
+
+function undoRedoCanvas(trackObj) {
+    track = trackObj.trackValue;
+    undoRedoTracker = trackObj.undoRedoTracker;
+
+    let url = undoRedoTracker[track];
+    let img = new Image();//instance of the image object;
+    img.src = url;
+    img.onload = (e) => {
+        tool.drawImage(img, 0, 0, canvas.width, canvas.height);
+    }
+}
 
 function beginPath(strokeObj) {
     tool.beginPath();
@@ -74,4 +111,13 @@ eraser.addEventListener('click', function () {
         tool.strokeStyle = pencilColor;
         tool.lineWidth = pencilWidth;
     }
+})
+
+download.addEventListener('click', function () {
+    let url = canvas.toDataURL();
+
+    let a = document.createElement('a');
+    a.href = url;
+    a.download ='canvas.jpg';
+    a.click();
 })

@@ -11,6 +11,9 @@ let toolCont = document.querySelector('.tools-cont');
 let optionsCont = document.querySelector('.options-cont');
 let stickyCont = document.querySelector('.stickynote')
 let upload = document.querySelector('.upload')
+let download = document.querySelector('.download')
+let undo = document.querySelector('.undo');
+let redo = document.querySelector('.redo');
 optionsCont.addEventListener('click', (e) => {
     optionflag = !optionflag;
     if (optionflag) toolOpen()

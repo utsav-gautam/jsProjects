@@ -6,10 +6,12 @@ canvas.width = window.innerWidth;
 let pencilColorAll = document.querySelectorAll('.pencil-color');
 let pencilWidthElem = document.querySelector('.pencil-width');
 let eraserSizeElem = document.querySelector('.eraser-size');
+let newPage = document.querySelector('.delete');
+
 
 let pencilColor = 'black';
 let pencilWidth = '3';
-let eraserSize = '3';
+let eraserSize = '5';
 let eraserColor = 'white';
 
 let tool = canvas.getContext('2d');
@@ -93,6 +95,7 @@ pencilColorAll.forEach(function (colorElem) {
     colorElem.addEventListener('click', function (e) {
         let color = colorElem.classList[0];
         pencilColor = color;
+        tool.lineWidth = pencilWidth;
 
         if (pencilColor ==='yellow')
             tool.strokeStyle = '#e68d19';
@@ -104,11 +107,13 @@ pencilColorAll.forEach(function (colorElem) {
 pencilWidthElem.addEventListener('change', function (e) {
     pencilWidth = pencilWidthElem.value;
     tool.lineWidth = pencilWidth;
+    tool.strokeStyle = pencilColor;
 })
 
 eraserSizeElem.addEventListener('change', function(){
     eraserSize=eraserSizeElem.value;
     tool.lineWidth = eraserSize;
+    tool.strokeStyle = eraserColor;
 })
 
 eraser.addEventListener('click', function () {
@@ -128,4 +133,16 @@ download.addEventListener('click', function () {
     a.href = url;
     a.download ='canvas.jpg';
     a.click();
+})
+
+newPage.addEventListener('click', function (e) {
+    tool.fillStyle = 'white';
+    // tool.clearRect(0, 0, canvas.width, canvas.height);
+    tool.fillRect(0, 0, canvas.width, canvas.height);
+
+    undoRedoTracker = [];
+    track = 0;
+
+    undoRedoTracker.push(tool.getImageData(0, 0, canvas.width, canvas.height));
+    track = undoRedoTracker.length - 1;
 })

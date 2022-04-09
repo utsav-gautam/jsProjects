@@ -19,6 +19,10 @@ tool.lineWidth = '3';
 let undoRedoTracker = [];
 let track = 0;
 
+    undoRedoTracker.push(tool.getImageData(0, 0, canvas.width, canvas.height));
+    track = undoRedoTracker.length - 1;
+
+
 canvas.addEventListener('mousedown', function (e) {
     mousedown = true;
     beginPath({
@@ -37,38 +41,42 @@ canvas.addEventListener('mouseup', function (e) {
     mousedown = false;
 
     let url = canvas.toDataURL();
-    undoRedoTracker.push(url);
+    undoRedoTracker.push(tool.getImageData(0,0,canvas.width,canvas.height));
     track = undoRedoTracker.length-1;
 })
 
 undo.addEventListener('click', function () {
-    if (track > 0) track--;
-    let trackObj = {
-        trackValue: track,
-        undoRedoTracker
+    if (track > 0) {
+        track--;
+        let trackObj = {
+            trackValue: track,
+            undoRedoTracker
+        }
+        undoRedoCanvas(trackObj);
     }
-    undoRedoCanvas(trackObj);
 
 })
 redo.addEventListener('click', function () {
-    if (track < undoRedoTracker.length-1) track++;
-    let trackObj = {
-        trackValue: track,
-        undoRedoTracker
-    }
-    undoRedoCanvas(trackObj);
+    if (track < undoRedoTracker.length - 1)
+        track++;
+        let trackObj = {
+            trackValue: track,
+            undoRedoTracker
+        }
+        undoRedoCanvas(trackObj);
 })
 
 function undoRedoCanvas(trackObj) {
     track = trackObj.trackValue;
     undoRedoTracker = trackObj.undoRedoTracker;
 
-    let url = undoRedoTracker[track];
-    let img = new Image();//instance of the image object;
-    img.src = url;
-    img.onload = (e) => {
-        tool.drawImage(img, 0, 0, canvas.width, canvas.height);
-    }
+    tool.putImageData(undoRedoTracker[track], 0, 0);
+    // let url = undoRedoTracker[track];
+    // let img = new Image();//instance of the image object;
+    // img.src = url;
+    // img.onload = (e) => {
+    //     tool.drawImage(img, 0, 0, canvas.width, canvas.height);
+    // }
 }
 
 function beginPath(strokeObj) {
